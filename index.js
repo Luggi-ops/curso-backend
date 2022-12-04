@@ -7,7 +7,6 @@ class ProductManager {
     }
 
     addProduct(product){
-        console.log("products", this.products)
         const exist = this.products.find(prod => prod.code === product.code);
 
         if(exist){
@@ -42,10 +41,12 @@ class ProductManager {
     }
 
     updateProduct(id, body){
-        let product = this.products.find(prod => prod.id === product.id);
+        let product = this.products.find(prod => prod.id === id);
         const productsUpdate = this.products.filter((product) => product.id !== id)
         product = {...product, ...body}
         this.products = [...productsUpdate, product]
+        this.saveData();
+        console.log("update product")
     }
 
     deleteProduct(id){
@@ -80,8 +81,11 @@ pm.addProduct(product1)
 pm.addProduct(product2)
 pm.addProduct(product3)
 pm.addProduct(product4)
-// const products = pm.getProducts();
-// console.log("products", products);
+const products = pm.getProducts();
+console.log("products", products);
 
-// const findProduct = pm.getProductById("abc123")
-// console.log("findProduct", findProduct)
+// pm.deleteProduct(1670122531546);
+pm.updateProduct(1670122531545, {
+    title: "producto modificado",
+    price: 10000
+})
