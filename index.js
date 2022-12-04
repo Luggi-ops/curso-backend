@@ -1,21 +1,27 @@
-
+const fs = require('fs');
 
 class ProductManager {
-    constructor(products = [], ){
-        this.products = products;
+    constructor(path){
+        this.products = fs.readFileSync(path)? JSON.parse(fs.readFileSync(path)) : [];
+        this.path = path;
     }
 
     addProduct(product){
-        
+        console.log("products", this.products)
         const exist = this.products.find(prod => prod.code === product.code);
 
         if(exist){
             console.log("existing product")
         }else{
             const uid = Date.now();
-            this.products = [...this.products, {id: `PROD-${uid}`, ...product}]
+            this.products = [...this.products, {id: uid, ...product}]
             console.log("added product")
+            this.saveData();
         }
+    }
+
+    saveData(){
+        fs.writeFileSync(this.path, JSON.stringify(this.products))
     }
 
     getProducts(){
@@ -34,6 +40,20 @@ class ProductManager {
             }
         }
     }
+
+    updateProduct(id, body){
+        let product = this.products.find(prod => prod.id === product.id);
+        const productsUpdate = this.products.filter((product) => product.id !== id)
+        product = {...product, ...body}
+        this.products = [...productsUpdate, product]
+    }
+
+    deleteProduct(id){
+        const remove = this.products.filter((product) => product.id !== id)
+        this.products = remove;
+        this.saveData();
+        console.log("removed product")
+    }
 }
 
 class Product {
@@ -50,13 +70,18 @@ class Product {
 
 //proceso de testing
 
-const pm = new ProductManager();
+const pm = new ProductManager("data/products.json");
 
-const product = new Product("producto prueba", "Este es un producto prueba", "200", undefined,"abc123", 25);
-pm.addProduct(product)
-pm.addProduct(product)
-const products = pm.getProducts();
-console.log("products", products);
+const product1 = new Product("producto prueba 1", "Este es un producto prueba", "200", undefined,"prod1", 25);
+const product2 = new Product("producto prueba 2", "Este es un producto prueba", "300", undefined,"prod2", 25);
+const product3 = new Product("producto prueba 3", "Este es un producto prueba", "400", undefined,"prod3", 25);
+const product4 = new Product("producto prueba 4", "Este es un producto prueba", "500", undefined,"prod4", 25);
+pm.addProduct(product1)
+pm.addProduct(product2)
+pm.addProduct(product3)
+pm.addProduct(product4)
+// const products = pm.getProducts();
+// console.log("products", products);
 
-const findProduct = pm.getProductById("abc123")
-console.log("findProduct", findProduct)
+// const findProduct = pm.getProductById("abc123")
+// console.log("findProduct", findProduct)
